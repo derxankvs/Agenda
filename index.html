@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agenda de Serviços</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Agendamento</h2>
+    <form id="formAgendamento">
+      <input type="text" name="nome" placeholder="Nome completo" required>
+      <input type="tel" name="telefone" placeholder="Telefone WhatsApp (ex: 5511999998888)" required>
+      
+      <select name="categoria" required>
+        <option value="">Selecione o serviço</option>
+        <option value="manicure">Manicure</option>
+        <option value="cabeleireira">Cabeleireira</option>
+      </select>
+
+      <div id="servicosManicure" style="display:none;">
+        <label><input type="checkbox" name="servicos" value="Mão"> Mão</label>
+        <label><input type="checkbox" name="servicos" value="Pé"> Pé</label>
+        <label><input type="checkbox" name="servicos" value="Pintar a unha"> Pintar a unha</label>
+      </div>
+
+      <div id="servicosCabeleireira" style="display:none;">
+        <label><input type="checkbox" name="servicos" value="Corte"> Corte</label>
+        <label><input type="checkbox" name="servicos" value="Escova"> Escova</label>
+        <label><input type="checkbox" name="servicos" value="Coloração"> Coloração</label>
+      </div>
+
+      <button type="submit">Agendar</button>
+    </form>
+  </div>
+
+  <script>
+    const categoria = document.querySelector("select[name='categoria']");
+    categoria.addEventListener("change", () => {
+      document.getElementById("servicosManicure").style.display = categoria.value === "manicure" ? "block" : "none";
+      document.getElementById("servicosCabeleireira").style.display = categoria.value === "cabeleireira" ? "block" : "none";
+    });
+
+    document.getElementById("formAgendamento").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const data = {
+        nome: form.nome.value,
+        telefone: form.telefone.value,
+        categoria: form.categoria.value,
+        servicos: [...form.querySelectorAll("input[name='servicos']:checked")].map(el => el.value)
+      };
+
+      await fetch("/agendar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      alert("Seu pedido foi enviado! Aguarde a confirmação no WhatsApp.");
+      form.reset();
+    });
+  </script>
+</body>
+</html>
